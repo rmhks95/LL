@@ -4,6 +4,8 @@ using System.IO;
 using System.Net.Mail;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+
+
 public partial class Contact : System.Web.UI.Page
 {
     public string[,] needs = new string[50, 30];
@@ -187,11 +189,11 @@ public partial class Contact : System.Web.UI.Page
         string[,] needs1 = new string[50, 30];
         string[,] display1 = new string[50, 30];
         string[] split = new string[1300];
-        var file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB3.txt");
+        var file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB4.txt");
         if (File.Exists(file))
         {
 
-            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB3.txt")))
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB4.txt")))
             {
                 string line;
                 int m = 0;
@@ -318,9 +320,10 @@ public partial class Contact : System.Web.UI.Page
         }
     }
 
+
     private void GoBack()
     {
-        File.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB3.txt"));
+        File.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB4.txt"));
         ClientScript.RegisterStartupScript(this.GetType(), "newWindow", String.Format("<script>document.location.href = ('{0}');</script>", "NeedsFormed"));
     }
 
@@ -344,7 +347,7 @@ public partial class Contact : System.Web.UI.Page
             }
         }
 
-        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt"), true))
+        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt"), true))
         {
             for (int i = 0; i < 50; i++)
             {
@@ -370,7 +373,7 @@ public partial class Contact : System.Web.UI.Page
         {
             if (edited[i, 0] != null && edited[i, 0] != "")
             {
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/FinishedPB.txt"), true))
                 {
 
                     string output = "";

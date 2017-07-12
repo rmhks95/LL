@@ -1,15 +1,20 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Web.UI;
 
 public partial class About : Page
 {
+    static int total;
     public static int i = 0;
-    public static string[,] needs = new string[50,26];
+    public static string[,] needs = new string[total,26];
     public static string[] current = new string[26];
+
+    public bool works;
+    public bool redo;
     //public static string[] Department = { "R & D", "PRODUCT PROTOTYPES", "ENGINEERING", "TESTING", "PRODUCTION EQUIMENT", "FIXTURES, JIGS, TOOLING", "SHOW INVENTORY", "MARKETING", "MAINTENANCE", "SAFETY", "QUALITY", "OTHER" };
     //public static string[] prodLine = { "", "FARM & RANCH", "BALLS", "BALL MOUNTS", "CAB PROTECTOR", "FLAT BED", "GOOSENECK", "JOB SHOP", "MOTORCYCLE LATCH", "RCVR HITCH", "RV", "GN COUPLER", "TOW/STOW", "BISON", "OTHER" };
-
+   
     /// <summary>
     /// Main Method
     /// </summary>
@@ -17,6 +22,9 @@ public partial class About : Page
     /// <param name="e"></param>
     protected void Page_Load(object sender, EventArgs e)
     {
+
+        total = CountParts();
+        needs = new string[total, 26];
         //Dept_Drop.DataSource = Department;
         //Dept_Drop.DataBind();
         //Prod_Drop.DataSource = prodLine;
@@ -29,7 +37,7 @@ public partial class About : Page
 
     }
 
-   
+
     /// <summary>
     /// After everything is filled out
     /// </summary>
@@ -37,10 +45,13 @@ public partial class About : Page
     /// <param name="e"></param>
     protected void Button1_Click(object sender, EventArgs e)
     {
-        Function_Drop_SelectedIndexChanged(null, null);
+        works = true;
         makeList();
-        Session["part"] = current;
-        Empty();
+        if (works)
+        {
+            Session["part"] = current;
+            Empty();
+        }
         
     }
 
@@ -58,7 +69,12 @@ public partial class About : Page
     /// </summary>
     protected void makeList()
     {
-        if (current[0] == null)
+        if(dxfSp.Visible == true || pdfSp.Visible == true)
+        {
+            redo = true;
+        }
+
+        if (current[0] == null || redo == true)
         {   
             current[0] = DateTime.Now.ToString();
             current[1] = Function_Drop.Text;
@@ -72,7 +88,6 @@ public partial class About : Page
             if (Type_Drop.Text.Equals("Other")){ current[9] = Type_Exp_Box.Text; }else {current[9] = Type_Drop.Text; }
             if (Mat_Drop.Text.Equals("Other")) { current[10] = Mat_Exp_Box.Text; } else { current[10] = Mat_Drop.Text; }
             if (Gas_Drop.Text.Equals("Other")) { current[11] = Gas_Exp_Box.Text; } else { current[11] = Gas_Drop.Text; }
-            current[12] = Urg_drop.Text;
             current[13] = Grain_drop.Text;
             current[14] = Etch_drop.Text;
             current[15] = Seam_Drop.Text;
@@ -84,18 +99,33 @@ public partial class About : Page
             if (Las_drop.Text.Equals("Other")) { current[21] = Las_Ex_box.Text; } else { current[21] = Las_drop.Text; }
             if (Pres_drop.Text.Equals("Other")) { current[22] = Pres_Ex_box.Text; } else { current[22] = Pres_drop.Text; }
             string dxf = DXF_Up.FileName.ToString();
-            current[23] = DxfSearch(dxf);
+            if (dxf != "" && dxf != null)
+            {
+                FileInfo fi = new FileInfo(dxf);
+                string ext = fi.Extension;
+                string dxfRe;
+                if (ext.ToLower() == ".dxf")
+                { dxfRe = DxfSearch(dxf); }
+                else
+                {
+                    dxfRe = StepSearch(dxf);
+                }
+
+                if (dxfRe == "") { dxfSp.Visible = true; works = false;} else { current[23] = dxfRe; works = true; }
+            }
             string pdf = PDF_Up.FileName.ToString();
-            current[24] = PDFSearch(pdf);
+            if (pdf != "" && pdf != null)
+            {
+                string pdfRe = PDFSearch(pdf);
+                if(pdfRe == "") { pdfSp.Visible = true; works = false; } else { current[24] = pdfRe; works = true; }
+            }
             current[25] = Notes_Box.Text;
-            
-            updateList(current);
+
+           if (works)
+            {
+                updateList(current);
+            }
             //Session["nest"] = needs;
-        }
-        else
-        {
-            i++;
-            makeList();
         }
        
 
@@ -110,7 +140,7 @@ public partial class About : Page
         Function_Drop_SelectedIndexChanged(null, null);
         if (Pres_drop.Text == "" && (!Function_Drop.Text.Equals("PRESS BRAKE: PROGRAM TO CHECK CLEARANCE/TOOLS")))
         {
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt"), true))
             {
 
                 string output = "";
@@ -126,9 +156,9 @@ public partial class About : Page
                 sw.Close();
             }
         }
-        else if (Function_Drop.Text.Equals("PRESS BRAKE: PROGRAM TO CHECK CLEARANCE/TOOLS"))
+        /*else if (Function_Drop.Text.Equals("PRESS BRAKE: PROGRAM TO CHECK CLEARANCE/TOOLS"))
         {
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"), true))
             {
                 string output = "";
                 if (use[0] != null && use[0] != "")
@@ -142,9 +172,9 @@ public partial class About : Page
                 sw.Flush();
                 sw.Close();
             }
-        }
+        }*/
         else { 
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsNested.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsNested.txt"), true))
             {
 
                 string output = "";
@@ -159,7 +189,7 @@ public partial class About : Page
                 sw.Flush();
                 sw.Close();
             }
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"), true))
+            /*using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"), true))
             {
                 string output = "";
                 if (use[0] != null && use[0] != "")
@@ -172,7 +202,7 @@ public partial class About : Page
                 }
                 sw.Flush();
                 sw.Close();
-            }
+            }*/
         }
         if (needs[0, 0] == null)
         {
@@ -206,52 +236,67 @@ public partial class About : Page
     /// <param name="e"></param>
     protected void Function_Drop_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if(Function_Drop.Text.Equals("2D LASER: ECR REV/RELEASE"))
+        if(Function_Drop.Text.Equals("2D: ECR REV/RELEASE"))
         {
             ECR_Rev();
         }
-        else if(Function_Drop.Text.Equals("2D LASER: NEST & CUT"))
+        else if(Function_Drop.Text.Equals("2D: NEST & CUT"))
         {
            NC();
         }
-        else if(Function_Drop.Text.Equals("2D LASER: NEST,  CUT, & FORM"))
+        else if(Function_Drop.Text.Equals("2D: NEST, CUT, & FORM"))
         {
             NCF();
         }
-        else if(Function_Drop.Text.Equals("2D LASER: RE-CUT CURRENT PART"))
+        else if(Function_Drop.Text.Equals("2D: RE-CUT PART"))
         {
             RECP();
         }
-        else if(Function_Drop.Text.Equals("2D LASER: RE-CUT, & FORM CURRENT PART"))
+        else if(Function_Drop.Text.Equals("2D: RE-CUT, & FORM PART"))
         {
             RECFP();
         }
-        else if(Function_Drop.Text.Equals("2D LASER: NEST FOR QUOTE & NESTABILITY STUDY"))
+        else if(Function_Drop.Text.Equals("2D: NEST EVAL"))
         {
             NQS();
         }
-        else if(Function_Drop.Text.Equals("3D LASER: ECR REV/RELEASE "))
+        else if(Function_Drop.Text.Equals("3D: ECR REV/RELEASE "))
         {
             Tri_Rev();
         }
-        else if(Function_Drop.Text.Equals("3D LASER: NEST & CUT"))
+        else if(Function_Drop.Text.Equals("3D: NEST & CUT"))
         {
             Tri_NC();
         }
-        else if(Function_Drop.Text.Equals("3D LASER: RE-CUT CURRENT PART"))
+        else if(Function_Drop.Text.Equals("3D: RE-CUT PART"))
         {
             TRI_RECP();
         }
-        else if(Function_Drop.Text.Equals("3D LASER: NEST FOR QUOTE OR NESTABILITY STUDY"))
+        else if(Function_Drop.Text.Equals("3D: NEST EVAL"))
         {
             Tri_NQS();
         }
-        else if(Function_Drop.Text.Equals("PRESS BRAKE: PROGRAM TO CHECK CLEARANCE/TOOLS"))
+        else if(Function_Drop.Text.Equals("PB: BEND EVAL"))
         {
             Press_Brake();
         }
 
         
+    }
+
+    /// <summary>
+    /// Finds How many parts exist
+    /// </summary>
+    /// <returns></returns>
+    protected int CountParts()
+    {
+        int total = 0;
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/Finished.txt")).Count() + 5;
+        return (total);
     }
 
     /// <summary>
@@ -273,14 +318,11 @@ public partial class About : Page
         Cut_Date.Text = "";
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = false;
-        Urg_drop.Text = "";
         Las_drop.Enabled = false;
         Las_drop.Text = "";
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
-        Prod_Drop.Enabled = false;
-        Prod_Drop.Text = "";
+        Prod_Drop.Enabled = true;
         Dept_Drop.Enabled = false;
         Dept_Drop.Text = "";
         Grain_drop.Enabled = true;
@@ -292,6 +334,7 @@ public partial class About : Page
         Seam_Drop.Enabled = false;
         Seam_Drop.Text = "";
         Notes_Box.Enabled = true;
+        Files.Update();
     }
 
     /// <summary>
@@ -312,7 +355,6 @@ public partial class About : Page
         Cut_Date.Enabled = true;
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
@@ -328,6 +370,7 @@ public partial class About : Page
         Seam_Drop.Text = "";
         Notes_Box.Enabled = true;
         Cut_Date_Load();
+        Files.Update();
     }
 
     /// <summary>
@@ -347,7 +390,6 @@ public partial class About : Page
         Quan_Box.Enabled = true;
         Cut_Date.Enabled = true;
         Form_Date.Enabled = true;
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = true;
         Prod_Drop.Enabled = true;
@@ -363,6 +405,7 @@ public partial class About : Page
         Notes_Box.Enabled = true;
         Cut_Date_Load();
         Form_Date_Load();
+        Files.Update();
     }
 
     /// <summary>
@@ -383,7 +426,6 @@ public partial class About : Page
         Cut_Date.Enabled = true;
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
@@ -405,26 +447,24 @@ public partial class About : Page
         Seam_Drop.Text = "";
         Notes_Box.Enabled = true;
         Cut_Date_Load();
+        Files.Update();
     }
 
     /// <summary>
     /// 2D Recut and form part
     /// </summary>
     protected void RECFP()
-    {
+    {   
         Initials_Box.Enabled = true;
         Part_Num_Box.Enabled = true;
         Desc_Box.Enabled = true;
         Rev_Box.Enabled = false;
         Rev_Box.Text = "";
-        DXF_Up.Enabled = false;
-        PDF_Up.Enabled = true;
         Mat_Drop.Enabled = true;
         Type_Drop.Enabled = true;
         Quan_Box.Enabled = true;
         Cut_Date.Enabled = true;
         Form_Date.Enabled = true;
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = true;
         Prod_Drop.Enabled = true;
@@ -446,6 +486,11 @@ public partial class About : Page
         Notes_Box.Enabled = true;
         Cut_Date_Load();
         Form_Date_Load();
+
+        DXF_Up.Enabled = false;
+        PDF_Up.Enabled = true;
+        Files.Update();
+
     }
 
     /// <summary>
@@ -468,7 +513,6 @@ public partial class About : Page
         Cut_Date.Text = "";
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = false;
         Las_drop.Text = "";
         Pres_drop.Enabled = false;
@@ -486,6 +530,8 @@ public partial class About : Page
         Seam_Drop.Enabled = false;
         Seam_Drop.Text = "";
         Notes_Box.Enabled = true;
+
+        Files.Update();
     }
 
     /// <summary>
@@ -499,7 +545,10 @@ public partial class About : Page
         Rev_Box.Enabled = true;
         DXF_Up.Enabled = true;
         PDF_Up.Enabled = false;
-        Mat_Drop.Enabled = true;
+        Mat_Drop.Enabled = false;
+        Mat_Drop.Text = "Other";
+        Mat_Explain.Visible = true;
+        Mat_Exp_Box.Visible = true;
         Type_Drop.Enabled = true;
         Quan_Box.Enabled = false;
         Quan_Box.Text = "";
@@ -507,13 +556,11 @@ public partial class About : Page
         Cut_Date.Text = "";
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = false;
         Las_drop.Enabled = false;
         Las_drop.Text = "";
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
-        Prod_Drop.Enabled = false;
-        Prod_Drop.Text = "";
+        Prod_Drop.Enabled = true;
         Dept_Drop.Enabled = false;
         Dept_Drop.Text = "";
         Grain_drop.Enabled = false;
@@ -526,6 +573,7 @@ public partial class About : Page
         Pair_drop.Text = "";
         Seam_Drop.Enabled = true;
         Notes_Box.Enabled = true;
+        Files.Update();
     }
 
     /// <summary>
@@ -540,13 +588,15 @@ public partial class About : Page
         Rev_Box.Text = "";
         DXF_Up.Enabled = true;
         PDF_Up.Enabled = true;
-        Mat_Drop.Enabled = true;
+        Mat_Drop.Enabled = false;
+        Mat_Drop.Text = "Other";
+        Mat_Explain.Visible = true;
+        Mat_Exp_Box.Visible = true;
         Type_Drop.Enabled = true;
         Quan_Box.Enabled = true;
         Cut_Date.Enabled = true;
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
@@ -563,6 +613,7 @@ public partial class About : Page
         Seam_Drop.Enabled = true;
         Notes_Box.Enabled = true;
         Cut_Date_Load();
+        Files.Update();
     }
 
     /// <summary>
@@ -577,13 +628,15 @@ public partial class About : Page
         Rev_Box.Text = "";
         DXF_Up.Enabled = false;
         PDF_Up.Enabled = false;
-        Mat_Drop.Enabled = true;
+        Mat_Drop.Enabled = false;
+        Mat_Drop.Text = "Other";
+        Mat_Explain.Visible = true;
+        Mat_Exp_Box.Visible = true;
         Type_Drop.Enabled = true;
         Quan_Box.Enabled = true;
         Cut_Date.Enabled = true;
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = true;
         Pres_drop.Enabled = false;
         Pres_drop.Text = "";
@@ -604,6 +657,7 @@ public partial class About : Page
         Seam_Drop.Enabled = true;
         Notes_Box.Enabled = true;
         Cut_Date_Load();
+        Files.Update();
     }
 
     /// <summary>
@@ -618,7 +672,10 @@ public partial class About : Page
         Rev_Box.Text = "";
         DXF_Up.Enabled = true;
         PDF_Up.Enabled = false;
-        Mat_Drop.Enabled = true;
+        Mat_Drop.Enabled = false;
+        Mat_Drop.Text = "Other";
+        Mat_Explain.Visible = true;
+        Mat_Exp_Box.Visible = true;
         Type_Drop.Enabled = false;
         Type_Drop.Text = "";
         Quan_Box.Enabled = true;
@@ -626,7 +683,6 @@ public partial class About : Page
         Cut_Date.Text = "";
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = false;
         Las_drop.Text = "";
         Pres_drop.Enabled = false;
@@ -644,6 +700,7 @@ public partial class About : Page
         Pair_drop.Text = "";
         Seam_Drop.Enabled = true;
         Notes_Box.Enabled = true;
+        Files.Update();
     }
 
     /// <summary>
@@ -658,7 +715,10 @@ public partial class About : Page
         Rev_Box.Text = "";
         DXF_Up.Enabled = true;
         PDF_Up.Enabled = false;
-        Mat_Drop.Enabled = true;
+        Mat_Drop.Enabled = false;
+        Mat_Drop.Text = "Other";
+        Mat_Explain.Visible = true;
+        Mat_Exp_Box.Visible = true;
         Type_Drop.Enabled = false;
         Type_Drop.Text = "";
         Quan_Box.Enabled = false;
@@ -667,7 +727,6 @@ public partial class About : Page
         Cut_Date.Text = "";
         Form_Date.Enabled = false;
         Form_Date.Text = "";
-        Urg_drop.Enabled = true;
         Las_drop.Enabled = false;
         Las_drop.Text = "";
         Pres_drop.Enabled = false;
@@ -691,6 +750,7 @@ public partial class About : Page
         Seam_Drop.Enabled = false;
         Seam_Drop.Text = "";
         Notes_Box.Enabled = true;
+        Files.Update();
     }
 
     /// <summary>
@@ -710,7 +770,7 @@ public partial class About : Page
             Type_Explain.Visible = false;
             Type_Exp_Box.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -730,7 +790,7 @@ public partial class About : Page
             Mat_Explain.Visible = false;
             Mat_Exp_Box.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -751,7 +811,7 @@ public partial class About : Page
             Gas_Exp.Visible = false;
             Gas_Exp_Box.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -787,7 +847,7 @@ public partial class About : Page
             Las_Ex_box.Visible = false;
             Aft_las_exp.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -807,7 +867,7 @@ public partial class About : Page
             Pres_Ex_box.Visible = false;
             Aft_press_exp.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -827,7 +887,7 @@ public partial class About : Page
             Prod_Ex_box.Visible = false;
             Prod_Line_exp.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
     /// <summary>
@@ -847,7 +907,7 @@ public partial class About : Page
             Dep_Ex_box.Visible = false;
             Dept_exp.Visible = false;
         }
-        Function_Drop_SelectedIndexChanged(null, null);
+        //Function_Drop_SelectedIndexChanged(null, null);
     }
 
 
@@ -861,8 +921,6 @@ public partial class About : Page
     {
         if (CNum_Box.Text != "" && CNum_Box.Text != null)
             Refill(CNum_Box.Text);
-        else
-            Empty();
     }
     
     /// <summary>
@@ -871,11 +929,11 @@ public partial class About : Page
     /// <param name="use"></param>
     protected void Refill(string use) {
         string[] split = new string[3900];
-        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsNested.txt"));
+        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsNested.txt"));
         int toUse = 0;
         string line;
         int m = 0;
-        for (int i = 0; i < 50; i++)
+        for (int i = 0; i < total-1; i++)
         {
             line = SR.ReadLine();
             if (line != null)
@@ -902,22 +960,23 @@ public partial class About : Page
                 {
                     case 1:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"));
                         break;
                     case 2:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt"));
                         break;
                     case 3:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/Finished.txt"));
                         break;
                     case 4:
+                        SR.Close();
                         break;
                 }
             }
         }
-            for (int j = 0; j < 50; j++)
+            for (int j = 0; j < total; j++)
             {
                 if (needs[j, 1] != null)
                 {
@@ -970,8 +1029,6 @@ public partial class About : Page
                                     Gas_Drop.Text = needs[j, 11]; Gas_Exp.Visible = false; Gas_Exp_Box.Visible = false; Gas_Exp_Box.Text = needs[j, 11] = "";
                                 }
                             }
-                        if (Urg_drop.Enabled == true)
-                            Urg_drop.Text = needs[j, 12];
                         if (Grain_drop.Enabled == true)
                             Grain_drop.Text = needs[j, 13];
                         if (Etch_drop.Enabled == true)
@@ -1031,7 +1088,7 @@ public partial class About : Page
                                 }
                                 else
                                 {
-                                    Las_drop.Text = needs[j, 22]; Aft_press_exp.Visible = false; Pres_Ex_box.Visible = false; Pres_Ex_box.Text = needs[j, 22] = "";
+                                    Pres_drop.Text = needs[j, 22]; Aft_press_exp.Visible = false; Pres_Ex_box.Visible = false; Pres_Ex_box.Text = needs[j, 22] = "";
                                 }
                             }
                         Notes_Box.Text = needs[j, 25];
@@ -1101,8 +1158,6 @@ public partial class About : Page
                     Gas_Drop.Text = last[ 11]; Gas_Exp.Visible = false; Gas_Exp_Box.Visible = false; Gas_Exp_Box.Text = last[ 11] = "";
                 }
             }
-            if(Urg_drop.Enabled == true)
-            Urg_drop.Text = last[ 12];
             if(Grain_drop.Enabled == true)
             Grain_drop.Text = last[ 13];
             if(Etch_drop.Enabled == true)
@@ -1162,7 +1217,7 @@ public partial class About : Page
                 }
                 else
                 {
-                    Las_drop.Text = last[ 22]; Aft_press_exp.Visible = false; Pres_Ex_box.Visible = false; Pres_Ex_box.Text = last[ 22] = "";
+                    Pres_drop.Text = last[ 22]; Aft_press_exp.Visible = false; Pres_Ex_box.Visible = false; Pres_Ex_box.Text = last[ 22] = "";
                 }
             }
             Notes_Box.Text = last[ 25];
@@ -1178,11 +1233,15 @@ public partial class About : Page
     /// <param name="e"></param>
     protected void SC_But_Click(object sender, EventArgs e)
     {
-        Function_Drop_SelectedIndexChanged(null, null);
+        redo = true;
         makeList();
-        Part_Num_Box.Text = "";
-        Quan_Box.Text = "";
-
+        if (works)
+        {
+            Session["part"] = current;
+            Part_Num_Box.Text = "";
+            Quan_Box.Text = "";
+        }
+        redo = false;
     }
 
 
@@ -1194,16 +1253,36 @@ public partial class About : Page
     protected string DxfSearch(string file)
     {
         string location = "";
+        //string directory = \\fileserver\shared$\Documents\Engineering Department Folder\Secured Departmental Documents\Dxf";
 
-        foreach (string open in  Directory.EnumerateFiles(@"\\fileserver\shared$\Documents\Engineering Department Folder\Secured Departmental Documents\Dxf", file, SearchOption.AllDirectories))
+        foreach (string open in Directory.EnumerateFiles(@"\\fileserver\shared$\Documents\Programming\DXF", file, SearchOption.AllDirectories))
+            {
+                location = open;
+                break;
+            }
+
+        return location;
+    }
+
+
+    /// <summary>
+    /// Finds Step in folder
+    /// </summary>
+    /// <param name="file"></param>
+    /// <returns></returns>
+    protected string StepSearch(string file)
+    {
+        string location = "";
+        //string directory = \\fileserver\shared$\Documents\Engineering Department Folder\Secured Departmental Documents\Dxf";
+
+        foreach (string open in Directory.EnumerateFiles(@"\\fileserver\shared$\Documents\Programming\STEP", file, SearchOption.AllDirectories))
         {
             location = open;
             break;
         }
-        
+
         return location;
     }
-
 
 
     /// <summary>
@@ -1216,13 +1295,28 @@ public partial class About : Page
 
         string location = "";
 
-        foreach (string open in Directory.EnumerateFiles(@"S:\Workforce Share", file, SearchOption.AllDirectories))
+        foreach (string open in Directory.EnumerateFiles(@"\\fileserver\shared$\Workforce Share\RD Prints", file, SearchOption.AllDirectories))
         {
             location = open;
             break;
         }
-
-       
+        if(location == "")
+        {
+            foreach (string open in Directory.EnumerateFiles(@"\\fileserver\shared$\Workforce Share\Programming Prints", file, SearchOption.AllDirectories))
+            {
+                location = open;
+                break;
+            }
+        }
+        if(location == "")
+        {
+            foreach (string open in Directory.EnumerateFiles(@"\\fileserver\shared$\Workforce Share\Shop Prints", file, SearchOption.AllDirectories))
+            {
+                location = open;
+                break;
+            }
+        }
+        
         return location;
     }
 

@@ -12,8 +12,12 @@
         <asp:Button ID="LoginButton" runat="server" Text="Submit" OnClick="LoginButton_Click" /></div>
 
 
-<div id ="MainDiv" runat="server" visible="false">
+<div id ="MainDiv" runat="server" visible="false" style="margin-left: -100px ; margin-right:auto;">
     <p class="lead">
+	 Date: <asp:TextBox ID="Exp_Date" runat="server"></asp:TextBox>
+                <ajaxToolkit:CalendarExtender ID="Need_Cal" runat="server" TargetControlID="Exp_Date" Format="M/d/yyyy" PopupButtonID="Image1"/>  
+        &nbsp;&nbsp;&nbsp;
+        <asp:Button ID="Export_But" runat="server" OnClick="Export_But_Click" Text="Export" />
     <asp:GridView ID="GridView1" runat="server" class="sortable" OnRowDataBound="GridView1_DataBound" OnRowDeleting="GridView1_RowDeleting" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
         <AlternatingRowStyle BackColor="#DCDCDC" />
         <Columns>

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 public partial class Contact : Page
 {
-    static int total = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")).Count() + 3;
+    static int total = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt")).Count() + 5;
     public string[,] needs = new string[total, 30];
     public string[,] display = new string[total, 30];
 
@@ -41,29 +41,29 @@ public partial class Contact : Page
             CheckBox dc0 = new CheckBox();
             DataColumn dc1 = new DataColumn("Date Entered");
             DataColumn dc2 = new DataColumn("Function");
-            DataColumn dc3 = new DataColumn("Engineer's Initials");
-            DataColumn dc4 = new DataColumn("Part Description");
-            DataColumn dc5 = new DataColumn("Part Number");
-            DataColumn dc6 = new DataColumn("Quantity");
-            DataColumn dc7 = new DataColumn("Revision");
+            DataColumn dc3 = new DataColumn("Engineer");
+            DataColumn dc4 = new DataColumn("Description");
+            DataColumn dc5 = new DataColumn("Part Num.");
+            DataColumn dc6 = new DataColumn("Qty");
+            DataColumn dc7 = new DataColumn("Rev");
             DataColumn dc8 = new DataColumn("Cut by Date");
             DataColumn dc9 = new DataColumn("Form by Date");
-            DataColumn dc10 = new DataColumn("Type of Part");
+            DataColumn dc10 = new DataColumn("Part Type");
             DataColumn dc11 = new DataColumn("Material");
             DataColumn dc12 = new DataColumn("Gas");
             DataColumn dc13 = new DataColumn("Priority");
-            DataColumn dc14 = new DataColumn("Grain Restrictions");
+            DataColumn dc14 = new DataColumn("Grain Rest.");
             DataColumn dc15 = new DataColumn("Etch Lines");
-            DataColumn dc16 = new DataColumn("Seam of Tube Location Critical");
+            DataColumn dc16 = new DataColumn("Tube Seam");
             DataColumn dc17 = new DataColumn("Nest in Pairs");
-            DataColumn dc20 = new DataColumn("Restirctions on Pierces");
-            DataColumn dc21 = new DataColumn("Circle Correction");
-            DataColumn dc22 = new DataColumn("After Laser Cut");
-            DataColumn dc23 = new DataColumn("After Press Brake");
+            DataColumn dc20 = new DataColumn("Pierce Rest.");
+            DataColumn dc21 = new DataColumn("Circle Corr.");
+            DataColumn dc22 = new DataColumn("After Cut");
+            DataColumn dc23 = new DataColumn("After Form");
             DataColumn dc24 = new DataColumn("DXF");
             DataColumn dc25 = new DataColumn("PDF");
-            DataColumn dc26 = new DataColumn("Notes for Programmer");
-            DataColumn dc27 = new DataColumn("Programmer's Initials");
+            DataColumn dc26 = new DataColumn("Program Notes");
+            DataColumn dc27 = new DataColumn("Programmer");
             
 
 
@@ -103,31 +103,31 @@ public partial class Contact : Page
                     DataRow dr = dt2.NewRow();
                     dr["Date Entered"] = display[i, 0];
                     dr["Function"] = display[i, 1];
-                    dr["Engineer's Initials"] = display[i, 2];
-                    dr["Part Description"] = display[i, 3];
-                    dr["Part Number"] = display[i, 4];
-                    dr["Quantity"] = display[i, 5];
-                    dr["Revision"] = display[i, 6];
+                    dr["Engineer"] = display[i, 2];
+                    dr["Description"] = display[i, 3];
+                    dr["Part Num."] = display[i, 4];
+                    dr["Qty"] = display[i, 5];
+                    dr["Rev"] = display[i, 6];
                     dr["Cut by Date"] = display[i, 7];
                     dr["Form by Date"] = display[i, 8];
-                    dr["Type of Part"] = display[i, 9];
+                    dr["Part Type"] = display[i, 9];
                     dr["Material"] = display[i, 10];
                     dr["Gas"] = display[i, 11];
                     dr["Priority"] = display[i, 12];
-                    dr["Grain Restrictions"] = display[i, 13];
+                    dr["Grain Rest."] = display[i, 13];
                     dr["Etch Lines"] = display[i, 14];
-                    dr["Seam of Tube Location Critical"] = display[i, 15];
+                    dr["Tube Seam"] = display[i, 15];
                     dr["Nest in Pairs"] = display[i, 16];
-                    dr["Restirctions on Pierces"] = display[i, 19];
-                    dr["Circle Correction"] = display[i, 20];
-                    dr["After Laser Cut"] = display[i, 21];
-                    dr["After Press Brake"] = display[i, 22];
+                    dr["Pierce Rest."] = display[i, 19];
+                    dr["Circle Corr."] = display[i, 20];
+                    dr["After Cut"] = display[i, 21];
+                    dr["After Form"] = display[i, 22];
                     dr["DXF"] = display[i, 23];
                     dr["PDF"] = display[i, 24];
-                    dr["Notes for Programmer"] = display[i, 25];
+                    dr["Program Notes"] = display[i, 25];
                     if (display[i, 27] != null)
                     {
-                        dr["Programmer's Initials"] = display[i, 27];
+                        dr["Programmer"] = display[i, 27];
                     }
                     dt2.Rows.Add(dr);
 
@@ -166,7 +166,7 @@ public partial class Contact : Page
     {
         needs = new string[total, 30];
         string[] split = new string[1300];
-        using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")))
+        using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt")))
         {
             string line;
             int m = 0;
@@ -233,6 +233,92 @@ public partial class Contact : Page
         }
 
         return display;
+    }
+
+    /// <summary>
+    /// Opends page of the url
+    /// </summary>
+    /// <param name="url"></param>
+    private void OpenNewWindown(string url)
+    {
+
+        ClientScript.RegisterStartupScript(this.GetType(), "newWindow", String.Format("<script>document.location.href = ('{0}');</script>", url));
+    }
+
+    protected void P1_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer1");
+    }
+
+
+    protected void P2_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer2");
+    }
+
+    protected void P3_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer3");
+    }
+
+    protected void P4_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer4");
+    }
+
+    protected void P5_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer5");
+    }
+
+    protected void P6_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"Programmer6");
+
+    }
+
+    protected void PB1_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB1");
+    }
+
+
+    protected void PB2_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB2");
+    }
+
+    protected void PB3_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB3");
+    }
+
+    protected void PB4_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB4");
+    }
+
+    protected void PB5_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB5");
+    }
+
+    protected void PB6_Click(object sender, EventArgs e)
+    {
+
+        OpenNewWindown(@"PB6");
+
     }
 
 }

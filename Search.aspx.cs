@@ -4,7 +4,7 @@ using System.IO;
 using System.Data;
 using System.Drawing;
 using System.Web.UI.WebControls;
-
+using System.Collections.Generic;
 
 public partial class Home : System.Web.UI.Page
 {
@@ -28,28 +28,33 @@ public partial class Home : System.Web.UI.Page
         found = new string[total,31];
 
 
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsNested.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsNested.txt")))
         {
-            var yep= File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsNested.txt"));
+            var yep= File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsNested.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/Finished.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/Finished.txt"));
+            yep.Close();
+        }
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt")))
+        {
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"));
             yep.Close();
         }
         string[] split = new string[total];
-        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsNested.txt"));
+        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsNested.txt"));
         int toUse = 0;
         string line;
         int m = 0;
@@ -70,7 +75,12 @@ public partial class Home : System.Web.UI.Page
             }
             else if (toUse == 3)
             {
-                needs[i, 28] = "Finished";
+                needs[i, 28] = "Finished Nested";
+
+            }
+            else if (toUse == 4)
+            {
+                needs[i, 28] = "Finished Formed";
 
             }
 
@@ -101,17 +111,21 @@ public partial class Home : System.Web.UI.Page
                 {
                     case 1:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"));
                         break;
                     case 2:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt"));
                         break;
                     case 3:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/Finished.txt"));
                         break;
                     case 4:
+                        SR.Close();
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"));
+                        break;
+                    case 5:
                         //SR.Close();
                         break;                   
                 }
@@ -120,9 +134,10 @@ public partial class Home : System.Web.UI.Page
             }
         }
         SR.Close();
-    
 
-        string[] open = new string[total];
+
+        string[] open = new string[(total * 31)];
+        List<string> closed = new List<string>();
         for (int i = 0; i < total; i++)
         {
             if (needs[i, 0] != null)
@@ -131,20 +146,31 @@ public partial class Home : System.Web.UI.Page
             }
         }
 
-        System.Array.Sort(open);
+        foreach (string date in open)
+        {
+            if (date != null)
+                closed.Add(date);
+        }
+
+
+
+        List<DateTime> dates = closed.Select(date => DateTime.Parse(date)).ToList();
+
+        dates.Sort((a, b) => b.CompareTo(a));
+
 
         display = new string[total, 31];
         int p = 0;
-        int n = open.Length-1;
-        while (n>-1)
+        int n = open.Length - 1;
+        while (n > -1)
         {
-            if (open[n] != null)
+            foreach (var date in dates)
             {
-                for (int h = total-1; h> -1; h--)
+                for (int h = total - 1; h > -1; h--)
                 {
                     if (p < total)
                     {
-                        if (open[n] == needs[h, 0])
+                        if (date.ToString() == needs[h, 0])
                         {
                             for (int q = 0; q < 31; q++)
                             {
@@ -158,11 +184,18 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            n=n-1;
+            n = n - 1;
         }
 
+        if (DropDownList1.Text == "All")
+            found = findAll(display);
+        else if (DropDownList1.Text == "Part Numbers")
+            found = findPN(display);
+        else
+        {
+            found = findDS(display);
+        }
 
-        found = find(display);
         if (found[0, 0] != null && PartNum.Text != "")
         {
             
@@ -172,69 +205,68 @@ public partial class Home : System.Web.UI.Page
             DataTable dt2 = new DataTable("test");
 
             // DataColumn you can use constructor DataColumn(name,type);
-            DataColumn dc0 = new DataColumn("Location");
+            DataColumn dc0 = new DataColumn("Status");
             DataColumn dc1 = new DataColumn("Date Entered");
             DataColumn dc2 = new DataColumn("Function");
-            DataColumn dc3 = new DataColumn("Engineer's Initials");
-            DataColumn dc4 = new DataColumn("Part Description");
-            DataColumn dc5 = new DataColumn("Part Number");
-            DataColumn dc6 = new DataColumn("Quantity");
-            DataColumn dc7 = new DataColumn("Revision");
+            DataColumn dc3 = new DataColumn("Engineer");
+            DataColumn dc4 = new DataColumn("Description");
+            DataColumn dc5 = new DataColumn("Part Num.");
+            DataColumn dc6 = new DataColumn("Qty");
+            DataColumn dc7 = new DataColumn("Rev");
             DataColumn dc8 = new DataColumn("Cut by Date");
             DataColumn dc9 = new DataColumn("Form by Date");
-            DataColumn dc10 = new DataColumn("Type of Part");
+            DataColumn dc10 = new DataColumn("Part Type");
             DataColumn dc11 = new DataColumn("Material");
             DataColumn dc12 = new DataColumn("Gas");
-            DataColumn dc13 = new DataColumn("Priority");
-            DataColumn dc14 = new DataColumn("Grain Restrictions");
+            DataColumn dc14 = new DataColumn("Grain Rest.");
             DataColumn dc15 = new DataColumn("Etch Lines");
-            DataColumn dc16 = new DataColumn("Seam of Tube Location Critical");
+            DataColumn dc16 = new DataColumn("Tube Seam");
             DataColumn dc17 = new DataColumn("Nest in Pairs");
             DataColumn dc18 = new DataColumn("Product Line");
-            DataColumn dc19 = new DataColumn("Department to Charge");
-            DataColumn dc20 = new DataColumn("Restirctions on Pierces");
-            DataColumn dc21 = new DataColumn("Circle Correction");
-            DataColumn dc22 = new DataColumn("After Laser Cut");
-            DataColumn dc23 = new DataColumn("After Press Brake");
+            DataColumn dc19 = new DataColumn("Charge To:");
+            DataColumn dc20 = new DataColumn("Pierce Rest.");
+            DataColumn dc21 = new DataColumn("Circle Corr.");
+            DataColumn dc22 = new DataColumn("After Cut");
+            DataColumn dc23 = new DataColumn("After Form");
             DataColumn dc24 = new DataColumn("DXF");
             DataColumn dc25 = new DataColumn("PDF");
-            DataColumn dc26 = new DataColumn("Notes for Programmer");
-            DataColumn dc27 = new DataColumn("Programmer's Initials");
-            DataColumn dc28 = new DataColumn("Nest File Location");
+            DataColumn dc26 = new DataColumn("Program Notes");
+            DataColumn dc27 = new DataColumn("Programmer");
+            DataColumn dc28 = new DataColumn("Nest File");
             DataColumn dc29 = new DataColumn("Date Nested");
+            DataColumn dc30 = new DataColumn("Machine");
 
 
             dt2.Columns.Add(dc0);
             dt2.Columns.Add(dc1);
-            dt2.Columns.Add(dc29);
-            dt2.Columns.Add(dc2);
-            dt2.Columns.Add(dc3);
-            dt2.Columns.Add(dc27);
-            dt2.Columns.Add(dc4);
             dt2.Columns.Add(dc5);
+            dt2.Columns.Add(dc4);
+            dt2.Columns.Add(dc3);
+            dt2.Columns.Add(dc11);
+            dt2.Columns.Add(dc2);
             dt2.Columns.Add(dc6);
+            dt2.Columns.Add(dc10);
+            dt2.Columns.Add(dc29);
+            dt2.Columns.Add(dc18);
+            dt2.Columns.Add(dc27);
+            dt2.Columns.Add(dc19);
+            dt2.Columns.Add(dc30);
             dt2.Columns.Add(dc7);
             dt2.Columns.Add(dc8);
             dt2.Columns.Add(dc9);
-            dt2.Columns.Add(dc10);
-            dt2.Columns.Add(dc11);
             dt2.Columns.Add(dc12);
-            dt2.Columns.Add(dc13);
             dt2.Columns.Add(dc14);
             dt2.Columns.Add(dc15);
-            dt2.Columns.Add(dc16);
             dt2.Columns.Add(dc17);
-            dt2.Columns.Add(dc18);
-            dt2.Columns.Add(dc19);
             dt2.Columns.Add(dc20);
             dt2.Columns.Add(dc21);
+            dt2.Columns.Add(dc16);
             dt2.Columns.Add(dc22);
             dt2.Columns.Add(dc23);
             dt2.Columns.Add(dc24);
             dt2.Columns.Add(dc25);
-            dt2.Columns.Add(dc28);
             dt2.Columns.Add(dc26);
-
+            dt2.Columns.Add(dc28);
 
             for (int i = 0; i < total; i++)
             {
@@ -242,42 +274,42 @@ public partial class Home : System.Web.UI.Page
                 {
 
                     DataRow dr = dt2.NewRow();
-                    dr["Location"] = found[i, 28];
+                    dr["Status"] = found[i, 28];
                     dr["Date Entered"] = found[i, 0];
                     dr["Function"] = found[i, 1];
-                    dr["Engineer's Initials"] = found[i, 2];
-                    dr["Part Description"] = found[i, 3];
-                    dr["Part Number"] = found[i, 4];
-                    dr["Quantity"] = found[i, 5];
-                    dr["Revision"] = found[i, 6];
+                    dr["Engineer"] = found[i, 2];
+                    dr["Description"] = found[i, 3];
+                    dr["Part Num."] = found[i, 4];
+                    dr["Qty"] = found[i, 5];
+                    dr["Rev"] = found[i, 6];
                     dr["Cut by Date"] = found[i, 7];
                     dr["Form by Date"] = found[i, 8];
-                    dr["Type of Part"] = found[i, 9];
+                    dr["Part Type"] = found[i, 9];
                     dr["Material"] = found[i, 10];
                     dr["Gas"] = found[i, 11];
-                    dr["Priority"] = found[i, 12];
-                    dr["Grain Restrictions"] = found[i, 13];
+                    dr["Grain Rest."] = found[i, 13];
                     dr["Etch Lines"] = found[i, 14];
-                    dr["Seam of Tube Location Critical"] = found[i, 15];
+                    dr["Tube Seam"] = found[i, 15];
                     dr["Nest in Pairs"] = found[i, 16];
                     dr["Product Line"] = found[i, 17];
-                    dr["Department to Charge"] = found[i, 18];
-                    dr["Restirctions on Pierces"] = found[i, 19];
-                    dr["Circle Correction"] = found[i, 20];
-                    dr["After Laser Cut"] = found[i, 21];
-                    dr["After Press Brake"] = found[i, 22];
+                    dr["Charge To:"] = found[i, 18];
+                    dr["Pierce Rest."] = found[i, 19];
+                    dr["Circle Corr."] = found[i, 20];
+                    dr["After Cut"] = found[i, 21];
+                    dr["After Form"] = found[i, 22];
                     dr["DXF"] = found[i, 23];
                     dr["PDF"] = found[i, 24];
-                    dr["Notes for Programmer"] = found[i, 25];
+                    dr["Program Notes"] = found[i, 25];
                     if (found[i, 27] != null)
                     {
-                        dr["Programmer's Initials"] = found[i, 27];
+                        dr["Programmer"] = found[i, 27];
                     }
                     if (found[i, 26] != null)
                     {
-                        dr["Nest File Location"] = found[i, 26];
+                        dr["Nest File"] = found[i, 26];
                     }
                     dr["Date Nested"] = found[i, 29];
+                    dr["Machine"] = found[i, 30];
                     //GridView1.Columns.Insert(0, checkBox);
                     dt2.Rows.Add(dr);
                 }
@@ -307,10 +339,11 @@ public partial class Home : System.Web.UI.Page
     protected int CountParts()
     {
         int total = 0;
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt")).Count() + 3;
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/Finished.txt")).Count() + 5;
         return (total);
     }
 
@@ -338,8 +371,83 @@ public partial class Home : System.Web.UI.Page
     }
     */
 
+    protected string[,] findPN(string [,] display)
+    {
+        string[] check = new string[32];
+        int o = 0;
+        for (int k = 0; k < (display.Length / 31); k++)
+        {
+            if (display[k, 0] != null)
+            {
+                for (int z = 0; z < 31; z++)
+                {
+                    check[z] = display[k, 4];
+                }
 
-    protected string[,] find(string [,] display)
+
+                for (int p = 0; p < 31; p++)
+                {
+                    if (check[p] != null)
+                    {
+                        if (check[p].ToLower().Contains(PartNum.Text.ToLower()))
+                        {
+                            for (int j = 0; j < 31; j++)
+                            {
+                                found[o, j] = display[k, j];
+                            }
+                            o++;
+                            break;
+                        }
+                    }
+
+                }
+
+
+            }
+
+        }
+        return found;
+    }
+
+
+    protected string[,] findDS(string[,] display)
+    {
+        string[] check = new string[32];
+        int o = 0;
+        for (int k = 0; k < (display.Length / 31); k++)
+        {
+            if (display[k, 0] != null)
+            {
+                for (int z = 0; z < 31; z++)
+                {
+                    check[z] = display[k, 3];
+                }
+
+
+                for (int p = 0; p < 31; p++)
+                {
+                    if (check[p] != null)
+                    {
+                        if (check[p].ToLower().Contains(PartNum.Text.ToLower()))
+                        {
+                            for (int j = 0; j < 31; j++)
+                            {
+                                found[o, j] = display[k, j];
+                            }
+                            o++;
+                            break;
+                        }
+                    }
+
+                }
+
+
+            }
+
+        }
+        return found;
+    }
+    protected string[,] findAll(string [,] display)
     {
         string[] check = new string[32];
         int o = 0;
@@ -370,27 +478,7 @@ public partial class Home : System.Web.UI.Page
                    
                 }
 
-                /*
-                if(check.Contains(PartNum.Text)){
-
-                    for (int j = 0; j < 31; j++)
-                    {
-                        found[o, j] = display[k, j];
-                    }
-                    o++;
-
-                }
                 
-                if (Array.IndexOf(check, (PartNum.Text)) >= 0)
-                {
-                    for (int j = 0; j < 31; j++)
-                    {
-                        found[o, j] = display[k, j];
-                    }
-                    o++;
-
-                }
-                */
             }
             
         }
@@ -421,7 +509,7 @@ public partial class Home : System.Web.UI.Page
                 {
                     cell.BackColor = Color.IndianRed;
                 }
-                else if (location.Equals("Finished"))
+                else if (location.Equals("Finished Nested") || location.Equals("Finished Formed"))
                 {
                     cell.BackColor = Color.LightGreen;
                 }
@@ -472,31 +560,29 @@ public partial class Home : System.Web.UI.Page
 
         display = (string[,])Session["array"];
         display[selected, 2] = ((TextBox)(row.Cells[5].Controls[0])).Text;
-        display[selected, 3] = ((TextBox)(row.Cells[7].Controls[0])).Text;
-        display[selected, 4] = ((TextBox)(row.Cells[8].Controls[0])).Text;
-        display[selected, 5] = ((TextBox)(row.Cells[9].Controls[0])).Text;
-        display[selected, 6] = ((TextBox)(row.Cells[10].Controls[0])).Text;
-        display[selected, 7] = ((TextBox)(row.Cells[11].Controls[0])).Text;
-        display[selected, 8] = ((TextBox)(row.Cells[12].Controls[0])).Text;
-        display[selected, 9] = ((TextBox)(row.Cells[13].Controls[0])).Text;
-        display[selected, 10] = ((TextBox)(row.Cells[14].Controls[0])).Text;
-        display[selected, 11] = ((TextBox)(row.Cells[15].Controls[0])).Text;
-        display[selected, 12] = ((TextBox)(row.Cells[16].Controls[0])).Text;
-        display[selected, 13] = ((TextBox)(row.Cells[17].Controls[0])).Text;
-        display[selected, 14] = ((TextBox)(row.Cells[18].Controls[0])).Text;
-        display[selected, 15] = ((TextBox)(row.Cells[19].Controls[0])).Text;
-        display[selected, 16] = ((TextBox)(row.Cells[20].Controls[0])).Text;
-        display[selected, 17] = ((TextBox)(row.Cells[21].Controls[0])).Text;
-        display[selected, 18] = ((TextBox)(row.Cells[22].Controls[0])).Text;
-        display[selected, 19] = ((TextBox)(row.Cells[23].Controls[0])).Text;
-        display[selected, 20] = ((TextBox)(row.Cells[24].Controls[0])).Text;
+        display[selected, 3] = ((TextBox)(row.Cells[4].Controls[0])).Text;
+        display[selected, 4] = ((TextBox)(row.Cells[3].Controls[0])).Text;
+        display[selected, 5] = ((TextBox)(row.Cells[8].Controls[0])).Text;
+        display[selected, 6] = ((TextBox)(row.Cells[15].Controls[0])).Text;
+        display[selected, 7] = ((TextBox)(row.Cells[16].Controls[0])).Text;
+        display[selected, 8] = ((TextBox)(row.Cells[17].Controls[0])).Text;
+        display[selected, 9] = ((TextBox)(row.Cells[9].Controls[0])).Text;
+        display[selected, 10] = ((TextBox)(row.Cells[6].Controls[0])).Text;
+        display[selected, 11] = ((TextBox)(row.Cells[18].Controls[0])).Text;
+        display[selected, 13] = ((TextBox)(row.Cells[19].Controls[0])).Text;
+        display[selected, 14] = ((TextBox)(row.Cells[20].Controls[0])).Text;
+        display[selected, 15] = ((TextBox)(row.Cells[24].Controls[0])).Text;
+        display[selected, 16] = ((TextBox)(row.Cells[21].Controls[0])).Text;
+        display[selected, 17] = ((TextBox)(row.Cells[11].Controls[0])).Text;
+        display[selected, 18] = ((TextBox)(row.Cells[13].Controls[0])).Text;
+        display[selected, 19] = ((TextBox)(row.Cells[22].Controls[0])).Text;
+        display[selected, 20] = ((TextBox)(row.Cells[23].Controls[0])).Text;
         display[selected, 21] = ((TextBox)(row.Cells[25].Controls[0])).Text;
         display[selected, 22] = ((TextBox)(row.Cells[26].Controls[0])).Text;
         display[selected, 23] = ((TextBox)(row.Cells[27].Controls[0])).Text;
         display[selected, 24] = ((TextBox)(row.Cells[28].Controls[0])).Text;
-        display[selected, 26] = ((TextBox)(row.Cells[29].Controls[0])).Text;
-        display[selected, 25] = ((TextBox)(row.Cells[30].Controls[0])).Text;
-        //dt.Rows[row.DataItemIndex]["Nest File Location"] = ((TextBox)(row.Cells[29].Controls[0])).Text;
+        display[selected, 25] = ((TextBox)(row.Cells[29].Controls[0])).Text;
+        //dt.Rows[row.DataItemIndex]["Nest File"] = ((TextBox)(row.Cells[29].Controls[0])).Text;
         //dt.Rows[row.DataItemIndex]["IsComplete"] = ((CheckBox)(row.Cells[3].Controls[0])).Checked;
 
         //Reset the edit index.
@@ -528,7 +614,7 @@ public partial class Home : System.Web.UI.Page
         string[] split = new string[(total * 31)];
         if (location.Equals("Needs Nested"))
         {
-            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt")))
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt")))
             {
                 string line;
                 for (int i = 0; i < total; i++)
@@ -556,9 +642,9 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NeedsNested.txt"));
+            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt"));
             fole1.Close();
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NeedsNested.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsNested.txt"), true))
             {
                 for (int i = 0; i < total; i++)
                 {
@@ -579,7 +665,7 @@ public partial class Home : System.Web.UI.Page
         }
         else if(location.Equals("Needs Formed"))
         {
-            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")))
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")))
             {
                 string line;
                 for (int i = 0; i < total; i++)
@@ -607,9 +693,9 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NeedsFormed.txt"));
+            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt"));
             fole1.Close();
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NeedsFormed.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt"), true))
             {
                 for (int i = 0; i < total; i++)
                 {
@@ -629,7 +715,7 @@ public partial class Home : System.Web.UI.Page
         }
         else if(location.Equals("In Progress"))
         {
-            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")))
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt")))
             {
                 string line;
                 for (int i = 0; i < total; i++)
@@ -657,9 +743,59 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt"));
+            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt"));
             fole1.Close();
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/InProgress.txt"), true))
+            {
+                for (int i = 0; i < total; i++)
+                {
+                    string output = "";
+                    if (needs[i, 0] != null && needs[i, 0] != "")
+                    {
+                        for (int j = 0; j < 31; j++)
+                        {
+                            output += needs[i, j] + "|";
+                        }
+                        sw.WriteLine(output);
+                    }
+
+                }
+                sw.Close();
+            }
+        }
+        else if(location.Equals("Finished Nested"))
+        {
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/Finished.txt")))
+            {
+                string line;
+                for (int i = 0; i < total; i++)
+                {
+
+
+                    line = SR.ReadLine();
+                    if (line != null)
+                    {
+                        split = line.Split('|');
+                        if (split[0] != use[selected, 0])
+                        {
+                            for (int j = 0; j < split.Length - 1; j++)
+                            {
+                                needs[i, j] = split[j];
+                            }
+                        }
+                        else
+                        {
+                            for (int j = 0; j < 30 - 1; j++)
+                            {
+                                needs[i, j] = use[selected, j];
+                            }
+                        }
+                    }
+                }
+            }
+            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/Finished.txt"));
+            fole1.Close();
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/Finished.txt"), true))
             {
                 for (int i = 0; i < total; i++)
                 {
@@ -679,7 +815,7 @@ public partial class Home : System.Web.UI.Page
         }
         else
         {
-            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt")))
+            using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt")))
             {
                 string line;
                 for (int i = 0; i < total; i++)
@@ -707,9 +843,9 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt"));
+            var fole1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"));
             fole1.Close();
-            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt"), true))
+            using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"), true))
             {
                 for (int i = 0; i < total; i++)
                 {

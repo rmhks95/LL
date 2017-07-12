@@ -13,8 +13,9 @@
 
     <asp:Button ID="NestBut" runat="server" Text="Nest Selected" OnClick="NestBut_Click"/>
     <br />
+    <asp:Label ID="Label2" runat="server" ForeColor="Red" Text="All Programming Pages in Use" Visible="False"></asp:Label>
     <br />
-
+    <div style="margin-left: -100px ; margin-right:auto;">
     <asp:GridView ID="GridView1" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" OnRowDataBound="GridView1_DataBound" BorderWidth="1px" CellPadding="3">
         <AlternatingRowStyle BackColor="#DCDCDC" />
         <Columns>
@@ -42,8 +43,11 @@
     </asp:GridView>
   
     
+       
     
-
+    </div>
+ <asp:Label ID="Label1" runat="server" ForeColor="Red" Text="All Programming Pages in Use" Visible="False"></asp:Label>
+  
     <br />
     <asp:Button ID="NestBut0" runat="server" Text="Nest Selected" OnClick="NestBut_Click" />
     <br />

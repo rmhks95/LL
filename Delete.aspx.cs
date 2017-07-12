@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
 
 
 public partial class Home : System.Web.UI.Page
@@ -41,7 +42,10 @@ public partial class Home : System.Web.UI.Page
         display = new string[total, 31];
 
         if (!Page.IsPostBack)
-            LoadFiles();
+        {
+            display = LoadFiles();
+            LoadTable(display);
+        }  
     }
 
 
@@ -52,39 +56,46 @@ public partial class Home : System.Web.UI.Page
     protected int CountParts()
     {
         int total = 0;
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")).Count();
-        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt")).Count() + 3;
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsNested.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsFormed.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\InProgress.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\FinishedPB.txt")).Count();
+        total = total + File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Finished.txt")).Count() + 5;
         return (total);
     }
 
     /// <summary>
     /// Loads all of parts
     /// </summary>
-    protected void LoadFiles() { 
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt")))
+    protected string[,] LoadFiles() { 
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsNested.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsNested.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsFormed.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsFormed.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\InProgress.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\InProgress.txt"));
             yep.Close();
         }
-        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt")))
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Finished.txt")))
         {
-            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt"));
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Finished.txt"));
             yep.Close();
         }
+        if (!File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt")))
+        {
+            var yep = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/FinishedPB.txt"));
+            yep.Close();
+        }
+		
         string[] split = new string[3900];
-        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsNested.txt"));
+        StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsNested.txt"));
         int toUse = 0;
         string line;
         int m = 0;
@@ -104,8 +115,12 @@ public partial class Home : System.Web.UI.Page
             }
             else if (toUse == 3)
             {
-                needs[i, 28] = "Finished";
+                needs[i, 28] = "Finished Nested";
 
+            }
+            else if (toUse == 4)
+            {
+                needs[i, 28] = "Finished Formed";
             }
 
 
@@ -135,19 +150,22 @@ public partial class Home : System.Web.UI.Page
                 {
                     case 1:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsFormed.txt"));
                         break;
                     case 2:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "InProgress.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\InProgress.txt"));
                         break;
                     case 3:
                         SR.Close();
-                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Finished.txt"));
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Finished.txt"));
                         break;
                     case 4:
-                        //SR.Close();
+                        SR.Close();
+                        SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\FinishedPB.txt"));
                         break;
+					case 5:
+						break;
                 }
 
 
@@ -156,7 +174,8 @@ public partial class Home : System.Web.UI.Page
         SR.Close();
 
 
-        string[] open = new string[total];
+        string[] open = new string[(total * 31)];
+        List<string> closed = new List<string>();
         for (int i = 0; i < total; i++)
         {
             if (needs[i, 0] != null)
@@ -165,20 +184,28 @@ public partial class Home : System.Web.UI.Page
             }
         }
 
-        System.Array.Sort(open);
+        foreach (string date in open)
+        {
+            if (date != null && date != "")
+                closed.Add(date);
+        }
+
+
+
+        List<DateTime> dates = closed.Select(date => DateTime.Parse(date)).ToList();
+
+        dates.Sort((a, b) => b.CompareTo(a));
+
 
         display = new string[total, 31];
         int p = 0;
-        int n = open.Length - 1;
-        while (n > -1)
-        {
-            if (open[n] != null)
+            foreach (var date in dates)
             {
-                for (int h = total-1 ; h > -1; h--)
+                for (int h = total - 1; h > -1; h--)
                 {
                     if (p < total)
                     {
-                        if (open[n] == needs[h, 0])
+                        if (date.ToString() == needs[h, 0])
                         {
                             for (int q = 0; q < 31; q++)
                             {
@@ -192,9 +219,7 @@ public partial class Home : System.Web.UI.Page
                     }
                 }
             }
-            n = n - 1;
-        }
-        LoadTable(display);
+        return display;
     }
     
     /// <summary>
@@ -357,7 +382,7 @@ public partial class Home : System.Web.UI.Page
                 {
                     cell.BackColor = Color.IndianRed;
                 }
-                else if (location.Equals("Finished"))
+                else if (location.Equals("Finished Nested") || location.Equals("Finished Formed"))
                 {
                     cell.BackColor = Color.LightGreen;
                 }
@@ -373,15 +398,21 @@ public partial class Home : System.Web.UI.Page
     /// <param name="use"></param>
     protected void FixLists(string [,] use)
     {
+
+        total = CountParts();
+
         string[,] NN = new string[total, 31];
         string[,] NF = new string[total, 31];
         string[,] IP = new string[total, 31];
-        string[,] FI = new string[total, 31];
+        string[,] FN = new string[total, 31];
+        string[,] FF = new string[total, 31];
 
         int e = 0;
         int o = 0;
         int r = 0;
         int n = 0;
+        int f = 0;
+        
         for (int i = 0; i < total; i++)
         {
             if (use[i, 28] == "Needs Nested")
@@ -408,39 +439,47 @@ public partial class Home : System.Web.UI.Page
                 }
                 r++;
             }
-            else if (use[i, 28] == "Finished")
+            else if (use[i, 28] == "Finished Nested")
             {
                 for (int k = 0; k < 31; k++)
                 {
-                    FI[n, k] = use[i, k];
+                    FN[n, k] = use[i, k];
                 }
                 n++;
             }
+            else if (use[i, 28] == "Finished Formed")
+            {
+                for (int k = 0; k < 31; k++)
+                {
+                    FF[f, k] = use[i, k];
+                }
+                f++;
+            }
         }
         
-                var file1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"NeedsNested.txt"));
+                var file1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\needsNested.txt"));
                 file1.Close();
-        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "NeedsNested.txt"), true))
-        {
-            for (int i = 0; i < total; i++)
-            {
-                string output = "";
-                if (NN[i, 0] != null && NN[i, 0] != "")
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\needsNested.txt"), true))
                 {
-                    for (int j = 0; j < 31; j++)
+                    for (int i = 0; i < total; i++)
                     {
-                        output += NN[i, j] + "|";
-                    }
-                    sw.WriteLine(output);
-                }
+                        string output = "";
+                        if (NN[i, 0] != null && NN[i, 0] != "")
+                        {
+                            for (int j = 0; j < 31; j++)
+                            {
+                                output += NN[i, j] + "|";
+                            }
+                            sw.WriteLine(output);
+                        }
 
-            }
-            sw.Close();
-        }
+                    }
+                    sw.Close();
+                }
           
-                var file2 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"NeedsFormed.txt"));
+                var file2 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\needsFormed.txt"));
                 file2.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"NeedsFormed.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\needsFormed.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
@@ -458,9 +497,9 @@ public partial class Home : System.Web.UI.Page
                     sw.Close();
                 }
 
-                var file3 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"));
+                var file3 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\InProgress.txt"));
                 file3.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\InProgress.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
@@ -478,18 +517,39 @@ public partial class Home : System.Web.UI.Page
                     sw.Close();
                 }
 
-                var file4 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt"));
+                var file4 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\Finished.txt"));
                 file4.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Finished.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\Finished.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
                         string output = "";
-                        if (FI[i, 0] != null && FI[i, 0] != "")
+                        if (FN[i, 0] != null && FN[i, 0] != "")
                         {
                             for (int j = 0; j < 31; j++)
                             {
-                                output += FI[i, j] + "|";
+                                output += FN[i, j] + "|";
+                            }
+                            sw.WriteLine(output);
+                        }
+
+                    }
+                    sw.Close();
+                }
+				
+				
+                var file5 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\FinishedPB.txt"));
+                file5.Close();
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data\FinishedPB.txt"), true))
+                {
+                    for (int i = 0; i < total; i++)
+                    {
+                        string output = "";
+                        if (FF[i, 0] != null && FF[i, 0] != "")
+                        {
+                            for (int j = 0; j < 31; j++)
+                            {
+                                output += FF[i, j] + "|";
                             }
                             sw.WriteLine(output);
                         }
@@ -517,10 +577,115 @@ public partial class Home : System.Web.UI.Page
 
         //Bind data to the GridView control.
         FixLists(display);
-        LoadFiles();
+        display = LoadFiles();
+        LoadTable(display);
         
 
     }
+    
+
+    protected void Export_But_Click(object sender, EventArgs e)
+    {
+        DateTime cutoff = DateTime.Parse(Exp_Date.Text);
+        FindDates(cutoff);
+        display = LoadFiles();
+        LoadTable(display);
+
+
+        Exp_Date.Text = "";
+
+        SendFile();
+
+    }
+
+    protected void FindDates(DateTime cutoff)
+    {
+        display = LoadFiles();
+
+        string[,] keep = new string[total, 32];
+        string[,] move = new string[total, 32];
+
+        int moveNow = 0;
+        int keepNow = 0;
+
+        for(int i = 0; i < total; i++)
+        {
+            if (display[i, 0] != "" && display[i, 0] != null)
+            {
+                DateTime use = DateTime.Parse(display[i, 0]);
+
+                int decide = DateTime.Compare(cutoff, use);
+                if (decide > 0)
+                {
+                    for (int j = 0; j < 31; j++)
+                    {
+                        move[moveNow, j] = display[i, j];
+                    }
+                    moveNow++;
+                }
+                else
+                {
+                    for (int j = 0; j < 31; j++)
+                    {
+                        keep[keepNow, j] = display[i, j];
+                    }
+                    keepNow++;
+                }
+            }
+        }
+
+        FixLists(keep);
+
+        MakeFile(move);
+    }
+
+    /// <summary>
+    /// Gives table a source and then Binds it
+    /// </summary>
+    protected void BindData()
+    {
+        GridView1.DataSource = Session["dt2"];
+        GridView1.DataBind();
+    }
+
+    protected void MakeFile(string[,] old)
+    {
+        var file1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\export.csv"));
+        file1.Close();
+        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\export.csv"), true))
+        {
+            for (int i = 0; i < total; i++)
+            {
+                string output = "";
+                if (old[i, 0] != null && old[i, 0] != "")
+                {
+                    for (int j = 0; j < 31; j++)
+                    {
+                        output += old[i, j] + "\",";
+
+                        if (j < 30)
+                        {
+                            output += "\"";
+                        }
+                    }
+                    sw.WriteLine(output);
+                }
+
+            }
+            sw.Close();
+        }
+
+    }
+
+    protected void SendFile()
+    {
+
+        Response.ContentType = "Application/csv";
+        Response.AppendHeader("Content-Disposition", "attachment; filename=export.csv");
+        Response.TransmitFile(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\export.csv"));
+        Response.End();
+    }
+
 }
 
 

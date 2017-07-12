@@ -6,9 +6,18 @@
     <meta http-equiv="refresh" content="60" />
         <asp:Image ID="Image2" runat="server" Height="87px" ImageUrl="~/Content/B&amp;W-Logo.jpg" Width="165px" />
          CNC Laser Log</h1>
-        <p class="lead">
+        
+    Display:
+            <asp:DropDownList ID="DropDownList1" runat="server" OnSelectedIndexChanged="DropDownList1_SelectedIndexChanged" AutoPostBack="true">
+                <asp:ListItem>100</asp:ListItem>
+                <asp:ListItem>500</asp:ListItem>
+                <asp:ListItem>All</asp:ListItem>
+            </asp:DropDownList>
+    
+<div style="margin-left: -100px ; margin-right:auto;">
 
-    <asp:GridView ID="GridView1" runat="server" class="sortable" OnRowDataBound="GridView1_DataBound" OnRowUpdating="TaskGridView_RowUpdating" OnRowCancelingEdit="TaskGridView_RowCancelingEdit" OnRowEditing="GridView1_RowEditing" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
+    <p class="lead">
+    <asp:GridView ID="GridView1" runat="server" class="sortable" OnRowDataBound="GridView1_DataBound" OnRowUpdating="TaskGridView_RowUpdating" OnRowCancelingEdit="TaskGridView_RowCancelingEdit" OnRowEditing="GridView1_RowEditing" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3" >
         <AlternatingRowStyle BackColor="#DCDCDC" />
         <Columns>
             <asp:TemplateField ShowHeader="False">
@@ -35,11 +44,11 @@
         <SortedDescendingCellStyle BackColor="#CAC9C9" />
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
-  
+    </p>
     
-    
+    </div>
 
-        </p>
+        
      <p class="lead">
 
     

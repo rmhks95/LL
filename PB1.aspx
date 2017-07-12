@@ -8,7 +8,7 @@
         Input for Programmer</h1>
 
 
-
+    <div style="margin-left: -100px ; margin-right:auto;">
     <asp:GridView ID="GridView1" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
         <AlternatingRowStyle BackColor="#DCDCDC" />
                 <EmptyDataTemplate>
@@ -24,7 +24,7 @@
         <SortedDescendingCellStyle BackColor="#CAC9C9" />
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
-  
+  </div>
     
     
 

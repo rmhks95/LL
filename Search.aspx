@@ -9,11 +9,18 @@
             <br />
             Search:
             <asp:TextBox ID="PartNum" runat="server" required="true"></asp:TextBox>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; in&nbsp;&nbsp;&nbsp;&nbsp;
+            <asp:DropDownList ID="DropDownList1" runat="server">
+                <asp:ListItem>All</asp:ListItem>
+                <asp:ListItem>Part Numbers</asp:ListItem>
+                <asp:ListItem>Description</asp:ListItem>
+            </asp:DropDownList>
         </p>
      <p class="lead">
 
          <asp:Button ID="Search" runat="server" Text="Search" OnClick="Search_Click" />
         </p>
+    <div style="margin-left: -100px ; margin-right:auto;">
      <p class="lead">
 
     <asp:GridView ID="GridView1" runat="server" class="sortable" OnRowDataBound="GridView1_DataBound" OnRowUpdating="TaskGridView_RowUpdating" OnRowCancelingEdit="TaskGridView_RowCancelingEdit" OnRowEditing="GridView1_RowEditing" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
@@ -34,7 +41,7 @@
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
   
-    
+    </div>
     
 
             <asp:TextBox ID="Needs_Box" runat="server" BorderStyle="None" Font-Bold="True" Font-Size="Larger">No Parts Found</asp:TextBox>

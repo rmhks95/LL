@@ -6,6 +6,8 @@
     <meta http-equiv="refresh" content="60" />
         <asp:Image ID="Image2" runat="server" Height="87px" ImageUrl="~/Content/B&amp;W-Logo.jpg" Width="165px" />
          Finished</h1>
+
+    <div style="margin-left: -100px ; margin-right:auto;">
         <p class="lead">
 
     <asp:GridView ID="GridView1" runat="server" class="sortable" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
@@ -20,15 +22,15 @@
         <SortedDescendingCellStyle BackColor="#CAC9C9" />
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
-  
-    
-    
-
-            <asp:TextBox ID="Needs_Box" runat="server"></asp:TextBox>
+     <asp:TextBox ID="Needs_Box" runat="server"></asp:TextBox>
          <br /> 
         <br />
         </p>
     
+    </div>
+    
+
+         
 
 
 </asp:Content>

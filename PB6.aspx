@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Programmer::" Language="C#"  MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="PB3.aspx.cs" Inherits="Contact" %>
+﻿<%@ Page Title="Programmer::" Language="C#"  MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="PB6.aspx.cs" Inherits="Contact" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">  
@@ -24,8 +24,8 @@
         <SortedDescendingCellStyle BackColor="#CAC9C9" />
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
-  
-    </div>
+  </div>
+    
     
 
     

@@ -5,10 +5,11 @@ using System.Linq;
 using System.Web.UI;
 using System.Drawing;
 using System.Web.UI.WebControls;
+using System.Collections.Generic;
 
 public partial class Contact : Page
 {
-    static int total = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")).Count() + 3;
+    static int total = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")).Count() + 5;
     public string[,] needs = new string[total, 30];
     public string[,] display = new string[total, 30];
 
@@ -19,10 +20,17 @@ public partial class Contact : Page
     /// <param name="e"></param>
     protected void Page_Load(object sender, EventArgs e)
     {
+        total = CountParts();
         if (!Page.IsPostBack)
         {
             LoadTable();
         }
+    }
+
+    protected int CountParts()
+    {
+        int num = File.ReadAllLines(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")).Count() + 5;
+        return num;
     }
 
     /// <summary>
@@ -43,55 +51,47 @@ public partial class Contact : Page
             CheckBox dc0 = new CheckBox();
             DataColumn dc1 = new DataColumn("Date Entered");
             DataColumn dc2 = new DataColumn("Function");
-            DataColumn dc3 = new DataColumn("Engineer's Initials");
-            DataColumn dc4 = new DataColumn("Part Description");
-            DataColumn dc5 = new DataColumn("Part Number");
-            DataColumn dc6 = new DataColumn("Quantity");
-            DataColumn dc7 = new DataColumn("Revision");
+            DataColumn dc3 = new DataColumn("Engineer");
+            DataColumn dc4 = new DataColumn("Description");
+            DataColumn dc5 = new DataColumn("Part Num.");
+            DataColumn dc6 = new DataColumn("Qty");
+            DataColumn dc7 = new DataColumn("Rev");
             DataColumn dc8 = new DataColumn("Cut by Date");
             DataColumn dc9 = new DataColumn("Form by Date");
-            DataColumn dc10 = new DataColumn("Type of Part");
+            DataColumn dc10 = new DataColumn("Part Type");
             DataColumn dc11 = new DataColumn("Material");
             DataColumn dc12 = new DataColumn("Gas");
-            DataColumn dc13 = new DataColumn("Priority");
-            DataColumn dc14 = new DataColumn("Grain Restrictions");
+            DataColumn dc13 = new DataColumn("Product Line");
+            DataColumn dc14 = new DataColumn("Charge To:");
             DataColumn dc15 = new DataColumn("Etch Lines");
-            DataColumn dc16 = new DataColumn("Seam of Tube Location Critical");
+            DataColumn dc16 = new DataColumn("Tube Seam");
             DataColumn dc17 = new DataColumn("Nest in Pairs");
-            DataColumn dc20 = new DataColumn("Restirctions on Pierces");
-            DataColumn dc21 = new DataColumn("Circle Correction");
-            DataColumn dc22 = new DataColumn("After Laser Cut");
-            DataColumn dc23 = new DataColumn("After Press Brake");
+            DataColumn dc20 = new DataColumn("Pierce Rest.");
+            DataColumn dc21 = new DataColumn("Circle Corr.");
+            DataColumn dc22 = new DataColumn("After Cut");
+            DataColumn dc23 = new DataColumn("After Form");
             DataColumn dc24 = new DataColumn("DXF");
             DataColumn dc25 = new DataColumn("PDF");
-            DataColumn dc26 = new DataColumn("Notes for Programmer");
+            DataColumn dc26 = new DataColumn("Program Notes");
 
 
 
             dt2.Columns.Add(dc1);
-            dt2.Columns.Add(dc2);
-            dt2.Columns.Add(dc3);
-            dt2.Columns.Add(dc4);
             dt2.Columns.Add(dc5);
+            dt2.Columns.Add(dc4);
+            dt2.Columns.Add(dc3);
+            dt2.Columns.Add(dc11);
+            dt2.Columns.Add(dc10);
             dt2.Columns.Add(dc6);
-            dt2.Columns.Add(dc7);
             dt2.Columns.Add(dc8);
             dt2.Columns.Add(dc9);
-            dt2.Columns.Add(dc10);
-            dt2.Columns.Add(dc11);
-            dt2.Columns.Add(dc12);
-            dt2.Columns.Add(dc13);
-            dt2.Columns.Add(dc14);
-            dt2.Columns.Add(dc15);
-            dt2.Columns.Add(dc16);
-            dt2.Columns.Add(dc17);
-            dt2.Columns.Add(dc20);
-            dt2.Columns.Add(dc21);
-            dt2.Columns.Add(dc22);
-            dt2.Columns.Add(dc23);
             dt2.Columns.Add(dc24);
             dt2.Columns.Add(dc25);
+            dt2.Columns.Add(dc23);
             dt2.Columns.Add(dc26);
+            dt2.Columns.Add(dc13);
+            dt2.Columns.Add(dc14);
+            
             //dt2.Columns.Add(dc27);
 
 
@@ -102,29 +102,20 @@ public partial class Contact : Page
                     //DataGridViewCheckBoxColumn checkBox = new DataGridViewCheckBoxColumn();
                     DataRow dr = dt2.NewRow();
                     dr["Date Entered"] = display[i, 0];
-                    dr["Function"] = display[i, 1];
-                    dr["Engineer's Initials"] = display[i, 2];
-                    dr["Part Description"] = display[i, 3];
-                    dr["Part Number"] = display[i, 4];
-                    dr["Quantity"] = display[i, 5];
-                    dr["Revision"] = display[i, 6];
+                    dr["Engineer"] = display[i, 2];
+                    dr["Description"] = display[i, 3];
+                    dr["Part Num."] = display[i, 4];
+                    dr["Qty"] = display[i, 5];
                     dr["Cut by Date"] = display[i, 7];
                     dr["Form by Date"] = display[i, 8];
-                    dr["Type of Part"] = display[i, 9];
+                    dr["Part Type"] = display[i, 9];
                     dr["Material"] = display[i, 10];
-                    dr["Gas"] = display[i, 11];
-                    dr["Priority"] = display[i, 12];
-                    dr["Grain Restrictions"] = display[i, 13];
-                    dr["Etch Lines"] = display[i, 14];
-                    dr["Seam of Tube Location Critical"] = display[i, 15];
-                    dr["Nest in Pairs"] = display[i, 16];
-                    dr["Restirctions on Pierces"] = display[i, 19];
-                    dr["Circle Correction"] = display[i, 20];
-                    dr["After Laser Cut"] = display[i, 21];
-                    dr["After Press Brake"] = display[i, 22];
+                    dr["Product Line"] = display[i, 17];
+                    dr["Charge To:"] = display[i, 18];
+                    dr["After Form"] = display[i, 22];
                     dr["DXF"] = display[i, 23];
                     dr["PDF"] = display[i, 24];
-                    dr["Notes for Programmer"] = display[i, 25];
+                    dr["Program Notes"] = display[i, 25];
                     dt2.Rows.Add(dr);
 
                 }
@@ -177,7 +168,7 @@ public partial class Contact : Page
     {
         needs = new string[total, 30];
         string[] split = new string[1300];
-        using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "needsFormed.txt")))
+        using (StreamReader SR = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/needsFormed.txt")))
         {
             string line;
             int m = 0;
@@ -202,8 +193,53 @@ public partial class Contact : Page
             SR.Close();
         }
 
-
         string[] open = new string[total];
+        List<string> closed = new List<string>();
+        for (int i = 0; i < total; i++)
+        {
+            if (needs[i, 0] != null)
+            {
+                open[i] = needs[i, 0];
+            }
+        }
+
+        foreach (string date in open)
+        {
+            if (date != null)
+                closed.Add(date);
+        }
+
+
+
+        List<DateTime> dates = closed.Select(date => DateTime.Parse(date)).ToList();
+
+        dates.Sort((a, b) => b.CompareTo(a));
+        display = new string[total, 31];
+        int p = 0;
+            foreach (var date in dates)
+            {
+                for (int h = total - 1; h > -1; h--)
+                {
+                    if (p < total)
+                    {
+                        if (date.ToString() == needs[h, 0])
+                        {
+                            for (int q = 0; q < 30; q++)
+                            {
+                                display[p, q] = needs[h, q];
+                            }
+                            needs[h, 0] = "";
+
+                            p++;
+                        }
+
+                    }
+                }
+        }
+
+        needs = display;
+        display = new string[total, 31];
+        open = new string[total];
         for (int i = 0; i < total; i++)
         {
             if (needs[i, 10] != null)
@@ -213,7 +249,7 @@ public partial class Contact : Page
         }
         System.Array.Sort(open);
 
-        int p = 0;
+        p = 0;
         int n = 0;
         while (n < open.Length)
         {
@@ -250,9 +286,9 @@ public partial class Contact : Page
     /// <param name="edited"></param>
     protected void RemakeFile(string[,] edited)
     {
-        var make = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"));
+        var make = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"));
         make.Close();
-        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"needsFormed.txt"), true))
+        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/needsFormed.txt"), true))
         {
             for (int i = 0; i < total; i++)
             {
@@ -282,7 +318,7 @@ public partial class Contact : Page
     {
 
 
-        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"InProgress.txt"), true))
+        using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/InProgress.txt"), true))
         {
             for (int i = 0; i < total; i++)
             {
@@ -303,25 +339,37 @@ public partial class Contact : Page
 
         int programmer = 0;
 
-        if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"P1.txt"))))
+        if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB1.txt"))))
         {
             programmer = 1;
         }
-        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"P2.txt"))))
+        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB2.txt"))))
         {
             programmer = 2;
         }
-        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"P3.txt"))))
+        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB3.txt"))))
         {
             programmer = 3;
+        }
+        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB4.txt"))))
+        {
+            programmer = 4;
+        }
+        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB5.txt"))))
+        {
+            programmer = 5;
+        }
+        else if (!(File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB6.txt"))))
+        {
+            programmer = 6;
         }
 
         switch (programmer)
         {
             case 1:
-                var file1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB1.txt"));
+                var file1 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB1.txt"));
                 file1.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB1.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB1.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
@@ -342,9 +390,9 @@ public partial class Contact : Page
                 OpenNewWindown(@"PB1");
                 break;
             case 2:
-                var file2 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB2.txt"));
+                var file2 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB2.txt"));
                 file2.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB2.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB2.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
@@ -365,9 +413,9 @@ public partial class Contact : Page
                 OpenNewWindown(@"PB2");
                 break;
             case 3:
-                var file3 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB3.txt"));
+                var file3 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB3.txt"));
                 file3.Close();
-                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"PB3.txt"), true))
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"App_Data/PB3.txt"), true))
                 {
                     for (int i = 0; i < total; i++)
                     {
@@ -386,6 +434,75 @@ public partial class Contact : Page
                     sw.Close();
                 }
                 OpenNewWindown(@"PB3");
+                break;
+            case 4:
+                var file4 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB4.txt"));
+                file4.Close();
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB4.txt"), true))
+                {
+                    for (int i = 0; i < total; i++)
+                    {
+                        string output = "";
+                        if (edited[i, 0] != null && edited[i, 0] != "")
+                        {
+                            edited[i, 27] = PrInIT.Text;
+                            for (int j = 0; j < 30; j++)
+                            {
+                                output += edited[i, j] + "|";
+                            }
+                            sw.WriteLine(output);
+                        }
+
+                    }
+                    sw.Close();
+                }
+                OpenNewWindown(@"PB4");
+                break;
+            case 5:
+                var file5 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB5.txt"));
+                file5.Close();
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB5.txt"), true))
+                {
+                    for (int i = 0; i < total; i++)
+                    {
+                        string output = "";
+                        if (edited[i, 0] != null && edited[i, 0] != "")
+                        {
+                            edited[i, 27] = PrInIT.Text;
+                            for (int j = 0; j < 30; j++)
+                            {
+                                output += edited[i, j] + "|";
+                            }
+                            sw.WriteLine(output);
+                        }
+
+                    }
+                    sw.Close();
+                }
+                OpenNewWindown(@"PB5");
+                break;
+            case 6:
+                var file6 = File.Create(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB6.txt"));
+                file6.Close();
+                using (var sw = new StreamWriter(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data/PB6.txt"), true))
+                {
+                    for (int i = 0; i < total; i++)
+                    {
+                        string output = "";
+                        if (edited[i, 0] != null && edited[i, 0] != "")
+                        {
+                            edited[i, 27] = PrInIT.Text;
+                            for (int j = 0; j < 30; j++)
+                            {
+                                output += edited[i, j] + "|";
+                            }
+                            sw.WriteLine(output);
+                        }
+
+                    }
+                    sw.Close();
+                }
+                OpenNewWindown(@"PB6");
                 break;
         }
 
@@ -444,15 +561,24 @@ public partial class Contact : Page
         if (e.Row.RowType == DataControlRowType.DataRow)
         {
             string location = (e.Row.Cells[13].Text);
+			e.Row.Cells[5].Font.Bold = true;
+            e.Row.Cells[5].Font.Size = 10;
 
-            foreach (TableCell cell in e.Row.Cells)
-            {
-                if (location.Equals("High"))
-                {
-                    cell.BackColor = Color.FromArgb(0, 252, 252, 100);
-                }
+            /*
+            e.Row.Cells[8].Font.Size = 9;
+            e.Row.Cells[9].Font.Bold = true;
+           e.Row.Cells[9].Font.Size = 10;
+           if (e.Row.Cells[9].Text != "" && e.Row.Cells[9].Text != "&nbsp;") { 
+               string date = e.Row.Cells[9].Text;
 
+               DateTime formated = DateTime.Parse(date);
+
+               if(formated < DateTime.Today.AddDays(2))
+               {
+                   e.Row.BackColor = Color.FromArgb(0, 252, 252, 100);
+               }
             }
+            */
         }
     }
 

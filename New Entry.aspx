@@ -15,7 +15,7 @@
 <head>
 	<title>2 Column CSS Demo - Equal Height Columns with Cross-Browser CSS</title>
 	<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-	<meta name="description" content="2 Column CSS Demo - Equal Height Columns with Cross-Browser CSS" />
+	<meta name="Description"" content="2 Column CSS Demo - Equal Height Columns with Cross-Browser CSS" />
 	<meta name="keywords" content="2 Column CSS Demo - Equal Height Columns with Cross-Browser CSS" />
 	<meta name="robots" content="index, follow" />
 	<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -62,6 +62,19 @@ body {
 	position:relative;
 	right:50%;
 	}
+
+#container3 {
+	clear:left;
+	float:left;
+	width:100%;
+	overflow:hidden;
+	}
+#container4 {
+	float:left;
+	width:100%;
+	position:relative;
+	right:50%;
+	}
 #col1 {
 	float:left;
 	width:46%;
@@ -76,24 +89,32 @@ body {
 	left:56%;
 	overflow:hidden;
 }
+#col3 {
+	float:left;
+	width:46%;
+	position:relative;
+	left:52%;
+	overflow:hidden;
+}
 /* --> */
     </style>
 </head>
 <body>
-
+    <asp:UpdatePanel ID="Info" runat="server">
+        <ContentTemplate>
      <p>
          Function To Be Preformed: <asp:DropDownList ID="Function_Drop" runat="server" EnableViewState="true" OnSelectedIndexChanged="Function_Drop_SelectedIndexChanged" AutoPostBack="true" Height="19px" Width="561px">
-            <asp:ListItem>2D LASER: ECR REV/RELEASE</asp:ListItem>
-            <asp:ListItem Selected="True">2D LASER: NEST &amp; CUT</asp:ListItem>
-            <asp:ListItem>2D LASER: NEST,  CUT, &amp; FORM</asp:ListItem>
-            <asp:ListItem>2D LASER: RE-CUT CURRENT PART</asp:ListItem>
-            <asp:ListItem>2D LASER: RE-CUT, &amp; FORM CURRENT PART</asp:ListItem>
-            <asp:ListItem>2D LASER: NEST FOR QUOTE &amp; NESTABILITY STUDY</asp:ListItem>
-            <asp:ListItem>3D LASER: ECR REV/RELEASE </asp:ListItem>
-            <asp:ListItem>3D LASER: NEST &amp; CUT</asp:ListItem>
-            <asp:ListItem>3D LASER: RE-CUT CURRENT PART</asp:ListItem>
-            <asp:ListItem>3D LASER: NEST FOR QUOTE OR NESTABILITY STUDY</asp:ListItem>
-            <asp:ListItem>PRESS BRAKE: PROGRAM TO CHECK CLEARANCE/TOOLS</asp:ListItem>
+            <asp:ListItem>2D: ECR REV/RELEASE</asp:ListItem>
+            <asp:ListItem Selected="True">2D: NEST &amp; CUT</asp:ListItem>
+            <asp:ListItem>2D: NEST, CUT, &amp; FORM</asp:ListItem>
+            <asp:ListItem>2D: RE-CUT PART</asp:ListItem>
+            <asp:ListItem>2D: RE-CUT, &amp; FORM PART</asp:ListItem>
+            <asp:ListItem>2D: NEST EVAL</asp:ListItem>
+            <asp:ListItem>3D: ECR REV/RELEASE </asp:ListItem>
+            <asp:ListItem>3D: NEST &amp; CUT</asp:ListItem>
+            <asp:ListItem>3D: RE-CUT PART</asp:ListItem>
+            <asp:ListItem>3D: NEST EVAL</asp:ListItem>
+            <asp:ListItem>PB: BEND EVAL</asp:ListItem>
         </asp:DropDownList>
    </p>
 <div id="container2">
@@ -117,12 +138,12 @@ body {
                  <asp:Label ID="Label4" runat="server" ForeColor="Red" Height="25px" Text="*"></asp:Label>
             </p>
             <p>
-                Part Type: <asp:DropDownList ID="Type_Drop" runat="server" required="true" EnableViewState="false" OnSelectedIndexChanged="Type_Drop_Changed" AutoPostBack="true" Enabled="False">
+                Part Type: <asp:DropDownList ID="Type_Drop" runat="server" required="true" OnSelectedIndexChanged="Type_Drop_Changed" AutoPostBack="true" Enabled="False">
                     <asp:ListItem Selected="True">Prototype</asp:ListItem>
                     <asp:ListItem>Shop Use</asp:ListItem>
                     <asp:ListItem>Personal Project</asp:ListItem>
-                    <asp:ListItem>Production Release by ECR</asp:ListItem>
-                    <asp:ListItem>Production Revision by ECR</asp:ListItem>
+                    <asp:ListItem>ECR Release</asp:ListItem>
+                    <asp:ListItem>ECR Revision</asp:ListItem>
                     <asp:ListItem>Other</asp:ListItem>       
                     <asp:ListItem></asp:ListItem>
                 </asp:DropDownList>
@@ -153,7 +174,7 @@ body {
                     </asp:DropDownList>
                   <asp:Label ID="Label6" runat="server" ForeColor="Red" Height="25px" Text="*"></asp:Label>
                  <asp:Label ID="Mat_Explain" runat="server" Text="Explain:" Visible="False"></asp:Label>
-                 <asp:TextBox ID="Mat_Exp_Box" runat="server" Visible="False"></asp:TextBox>
+                 <asp:TextBox ID="Mat_Exp_Box" runat="server" required="true" Visible="False"></asp:TextBox>
             </p>
             <p>
                 Quantity:<asp:TextBox ID="Quan_Box" runat="server" Enabled="False" required="true"></asp:TextBox>
@@ -199,7 +220,7 @@ body {
                 <asp:TextBox ID="Dep_Ex_box" runat="server" Visible="False"></asp:TextBox>
             </p>
              <p>
-                After Laser Cut: <asp:DropDownList ID="Las_drop" runat="server" required="true" EnableViewState="false" OnSelectedIndexChanged="Las_drop_Changed" AutoPostBack="true" Enabled="False">
+                After Laser Cut: <asp:DropDownList ID="Las_drop" runat="server" required="true" OnSelectedIndexChanged="Las_drop_Changed" AutoPostBack="true" Enabled="False">
                         <asp:ListItem Selected="True">Place in R&amp;D Rack</asp:ListItem>
                         <asp:ListItem>Page Engineer, Then Place in R&amp;D Rack</asp:ListItem>
                         <asp:ListItem>To Press Brake</asp:ListItem>
@@ -212,7 +233,7 @@ body {
                 <asp:TextBox ID="Las_Ex_box" runat="server" Visible="False"></asp:TextBox>
             </p>
             <p>
-                After Press Brake: <asp:DropDownList ID="Pres_drop" runat="server" required="true" EnableViewState="False" OnSelectedIndexChanged='Pres_drop_Changed' AutoPostBack="true" Enabled="False" EnableTheming="True">
+                After Press Brake: <asp:DropDownList ID="Pres_drop" runat="server" required="true" OnSelectedIndexChanged='Pres_drop_Changed' AutoPostBack="true" Enabled="False">
                         <asp:ListItem Selected="True">Page Engineer</asp:ListItem>
                         <asp:ListItem>To R&amp;D Rack</asp:ListItem>
                         <asp:ListItem>To R&amp;D Shop</asp:ListItem>
@@ -223,26 +244,11 @@ body {
                 <asp:Label ID="Aft_press_exp" runat="server" Text="Explain:" Visible="False"></asp:Label>
                 <asp:TextBox ID="Pres_Ex_box" runat="server" Visible="False"></asp:TextBox>
             </p>
-            <p>
-                DXF or STEP File:<asp:Label ID="Label5" runat="server" ForeColor="Red" Height="25px" Text="*"></asp:Label>
-            &nbsp;
-                <asp:FileUpload ID="DXF_Up" runat="server" required="true" Enabled="False" />
-            </p>
-            <p>
-                PDF File:<asp:FileUpload ID="PDF_Up" runat="server" Enabled="False" />
-            </p>
+            
 			<!-- Column one end -->
 		</div>
 		<div id="col2">
 			<!-- Column two start -->
-			<p>
-                    Priority: <asp:DropDownList ID="Urg_drop" runat="server" Enabled="False">
-                    <asp:ListItem>High</asp:ListItem>
-                    <asp:ListItem Selected="True">Med</asp:ListItem>
-                    <asp:ListItem>Low</asp:ListItem>
-                        <asp:ListItem> </asp:ListItem>
-                    </asp:DropDownList>
-			</p>
             <p>
                 Cut Needed by:<asp:TextBox ID="Cut_Date" runat="server" Enabled="False"></asp:TextBox>
                 <ajaxToolkit:CalendarExtender ID="Need_Cal" runat="server" TargetControlID="Cut_Date" Format="M/d/yyyy" PopupButtonID="Image1"/>  
@@ -313,10 +319,39 @@ body {
             <!-- Column two end -->
 		</div>
 	</div>
-    
+
+</div>
+    </ContentTemplate>
+    </asp:UpdatePanel>
+    <asp:UpdatePanel ID="Files" runat="server" UpdateMode="Conditional">    
+                    <ContentTemplate>     
+<div id="container3">
+	<div id="container4">
+	    <div id="col3">
+            <p>
+                 
+                    DXF or STEP File:<asp:Label ID="Label5" runat="server" ForeColor="Red" Height="25px" Text="*"></asp:Label> 
+                <asp:Label ID="dxfSp" runat="server" Visible="false" ForeColor="Red" Text ="FILE NOT FOUND"></asp:Label>
+                 &nbsp;<asp:Label ID="dxfPath" runat="server" Text ="must be in S:/Documents/Programming"></asp:Label>
+            &nbsp;<asp:FileUpload ID="DXF_Up" runat="server" required="true" Enabled="False" accept=".dxf,.step,.stp" />
+            </p>
+            <p>
+                PDF File: <asp:Label ID="pdfSp" runat="server" Visible="false" ForeColor="Red" Text ="FILE NOT FOUND"></asp:Label>
+                 &nbsp;<asp:Label ID="pdfPath" runat="server"  Text ="must be in S:/Workforce Share"></asp:Label>
+                <asp:FileUpload ID="PDF_Up" runat="server" Enabled="False" accept=".pdf" />
+                  
+            </p>
+        </div>
+        </div>
+    </div>
+
+                    </ContentTemplate> 
+
+                </asp:UpdatePanel> 
              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
              Notes to Programmer:<asp:TextBox ID="Notes_Box" runat="server" Width="900px" Height="42px"></asp:TextBox>
-    <br />
+
+     <br />
     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <asp:Label ID="Label12" runat="server" ForeColor="Red" Height="25px" Text="*"></asp:Label>
     Required<br />
@@ -324,40 +359,9 @@ body {
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <asp:Button ID="Submit_Button" runat="server" OnClick="Button1_Click" Text="Submit"/>
 	&nbsp;&nbsp;&nbsp;
-            <asp:Button ID="SC_But" runat="server" Font-Bold="True" Text="Submit &amp; Copy" OnClientClick ="disable()" onclick="SC_But_Click"/>
+            <asp:Button ID="SC_But" runat="server" Font-Bold="True" Text="Submit &amp; Copy" onclick="SC_But_Click"/>
 	</p>
-   </div>
-      
-    <script> function disable(){ type="text/javascript">document.getElementById("Submit_Button").disabled = true; document.getElementById("SC_But").disabled = true;}</script>
- 
-
-    <script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-    </script>
-
-    <script type="text/javascript">
-    _uacct = "UA-1848067-8";
-    urchinTracker();
-    </script>
-
-</body>
-</html>
-
-<asp:LinkButton ID="lnkDummy" runat="server"></asp:LinkButton>
-<ajaxToolkit:ModalPopupExtender ID="ModalPopupExtender1" BehaviorID="mpe" runat="server"
-    PopupControlID="pnlPopup" TargetControlID="lnkDummy" CancelControlID = "btnHide">
-</ajaxToolkit:ModalPopupExtender>
-<asp:Panel ID="pnlPopup" runat="server" Width ="153px" Height="69px" BackColor="Transparent">
-
-        Submiting Entry.. <asp:TextBox ID="Textbox1" runat ="server" Visible="false" ></asp:TextBox>
-        <br />
-        <asp:Button ID="btnHide" runat="server" Text="OK" />
-        <div style="align-items:center">
-        </div>
-   </div>
-</asp:Panel>
-
-
-
+   
  </asp:Content>
 
 

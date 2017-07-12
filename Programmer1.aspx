@@ -8,8 +8,8 @@
         Input for Programmer</h1>
 
 
-
-    <asp:GridView ID="GridView1" runat="server" BackColor="White" BorderColor="#999999" BorderStyle="None" BorderWidth="1px" CellPadding="3">
+    <div style="margin-left: -100px ; margin-right:auto;">
+    <asp:GridView ID="GridView1" runat="server" BackColor="White" BorderColor="#999999" OnRowDataBound="GridView1_DataBound" BorderStyle="None" BorderWidth="1px" CellPadding="3">
         <AlternatingRowStyle BackColor="#DCDCDC" />
                 <EmptyDataTemplate>
             <asp:CheckBox ID="Selected" runat="server" Enabled="true"/>
@@ -25,7 +25,7 @@
         <SortedDescendingHeaderStyle BackColor="#000065" />
     </asp:GridView>
   
-    
+    </div>
     
 
     
