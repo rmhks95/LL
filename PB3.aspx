@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Programmer::" Language="C#"  MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="PB3.aspx.cs" Inherits="Contact" %>
+﻿<%@ Page Title="Programmer::" Language="C#"  MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="PB3.aspx.cs" Inherits="Contact" MaintainScrollPositionOnPostback="true" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">  

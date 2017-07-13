@@ -648,7 +648,7 @@ public partial class Home : System.Web.UI.Page
                         }
                         else
                         {
-                            for (int j = 0; j < 30 - 1; j++)
+                            for (int j = 0; j < 30-1; j++)
                             {
                                 needs[i, j] = use[selected, j];
                             }
@@ -698,7 +698,7 @@ public partial class Home : System.Web.UI.Page
                         }
                         else
                         {
-                            for (int j = 0; j < 30 - 1; j++)
+                            for (int j = 0; j < 31 ; j++)
                             {
                                 needs[i, j] = use[selected, j];
                             }
@@ -749,7 +749,7 @@ public partial class Home : System.Web.UI.Page
                         }
                         else
                         {
-                            for (int j = 0; j < 30 - 1; j++)
+                            for (int j = 0; j < 31; j++)
                             {
                                 needs[i, j] = use[selected, j];
                             }

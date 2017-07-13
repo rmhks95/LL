@@ -1,4 +1,4 @@
-﻿<%@ Page Title="In Progress::" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="InProgress.aspx.cs" Inherits="Contact" %>
+﻿<%@ Page Title="In Progress::" Language="C#" MasterPageFile="~/Site.master" AutoEventWireup="true" CodeFile="InProgress.aspx.cs" Inherits="Contact" MaintainScrollPositionOnPostback="true"%>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">  
     <script src="Scripts/sorttable.js"></script>

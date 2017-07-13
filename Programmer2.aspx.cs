@@ -337,7 +337,7 @@ public partial class Contact : System.Web.UI.Page
                 m.Subject = items[i, 2] + " " + items[i, 4];
                 m.Body = "Part #:" + items[i, 4] + "\nPart Description:" + items[i, 3] + "\nMaterial:" + items[i, 10] + "\nNested at: " + items[i, 29] + "\nMachine Part was Nested for: " + MachineNum.Text;
                 sc.EnableSsl = true;
-                sc.Send(m);
+                //sc.Send(m);
             }
         }
     }

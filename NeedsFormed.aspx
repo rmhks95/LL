@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Needs Formed::"  Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="NeedsFormed.aspx.cs" Inherits="Contact" %>
+﻿<%@ Page Title="Needs Formed::"  Language="C#" MasterPageFile="~/Site.Master" AutoEventWireup="true" CodeFile="NeedsFormed.aspx.cs" Inherits="Contact" MaintainScrollPositionOnPostback="true" %>
 <%@ Register Assembly="AjaxControlToolkit" Namespace="AjaxControlToolkit" TagPrefix="cc1" %>
 
 <asp:Content ID="BodyContent" ContentPlaceHolderID="MainContent" runat="server">  
